@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+
 using MGroup.LinearAlgebra.Matrices;
 using MGroup.LinearAlgebra.Vectors;
 using MGroup.MSolve.Discretization.Interfaces;
@@ -25,12 +26,14 @@ namespace MGroup.Analyzers.Interfaces
 		//TODO: I think the analyzer is responsible for these. E.g. Newmark has the formulas with beta and gamma, Euler has the
 		//      central differences formulas, etc.
 		IDictionary<int, IVector> GetAccelerationsOfTimeStep(int timeStep);
+
 		IDictionary<int, IVector> GetVelocitiesOfTimeStep(int timeStep);
 
 		IDictionary<int, IVector> GetRhsFromHistoryLoad(int timeStep);
 
 		//TODO: what about thermal? There is no mass matrix there. Define these as 1st order matrix coeff, 2nd order ...
 		IVector MassMatrixVectorProduct(ISubdomain subdomain, IVectorView vector);
+
 		IVector DampingMatrixVectorProduct(ISubdomain subdomain, IVectorView vector);
 	}
 }

@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+
 using MGroup.Analyzers.Interfaces;
 using MGroup.MSolve.Discretization.Interfaces;
 using MGroup.Solvers;

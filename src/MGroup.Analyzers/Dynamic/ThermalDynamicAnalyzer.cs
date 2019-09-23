@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+
 using MGroup.Analyzers.Interfaces;
 using MGroup.LinearAlgebra.Vectors;
 using MGroup.MSolve.Discretization.Interfaces;
@@ -46,6 +47,7 @@ namespace MGroup.Analyzers.Dynamic
 		}
 
 		public Dictionary<int, IAnalyzerLog[]> Logs => null; //TODO: this can't be right
+
 		public Dictionary<int, ImplicitIntegrationAnalyzerLog> ResultStorages { get; }
 			= new Dictionary<int, ImplicitIntegrationAnalyzerLog>();
 

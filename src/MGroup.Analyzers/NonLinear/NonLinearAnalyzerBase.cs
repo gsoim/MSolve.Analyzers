@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using MGroup.Analyzers.Interfaces;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.MSolve.Discretization.Interfaces;
-using MGroup.MSolve.Logging;
-using MGroup.MSolve.Logging.Interfaces;
-using MGroup.Solvers;
-using MGroup.Solvers.LinearSystems;
-
-//TODO: It would be clearer and less error prone if incrementing the loading conditions doesn't alter the model's/subdomain's
-//      loads and constraints.
 namespace MGroup.Analyzers.NonLinear
 {
+	using System;
+	using System.Collections.Generic;
+
+	using MGroup.Analyzers.Interfaces;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.MSolve.Discretization.Interfaces;
+	using MGroup.MSolve.Logging;
+	using MGroup.MSolve.Logging.Interfaces;
+	using MGroup.Solvers;
+	using MGroup.Solvers.LinearSystems;
+
 	public abstract class NonLinearAnalyzerBase : IChildAnalyzer
 	{
-		//TODO: this should be passed in the constructor by the implementing class and used in Solve().
-		//protected readonly double residualTolerance;
-
 		protected readonly IReadOnlyDictionary<int, ILinearSystem> linearSystems;
 		protected readonly int maxIterationsPerIncrement;
 		protected readonly IModel model;
@@ -30,8 +26,8 @@ namespace MGroup.Analyzers.NonLinear
 		protected readonly Dictionary<int, IVector> u = new Dictionary<int, IVector>();
 		protected readonly Dictionary<int, IVector> du = new Dictionary<int, IVector>();
 		protected readonly Dictionary<int, IVector> uPlusdu = new Dictionary<int, IVector>();
-		protected Vector globalRhs; //TODO: This was originally readonly
-		protected double globalRhsNormInitial; //TODO: This can probably be a local variable.
+		protected Vector globalRhs;
+		protected double globalRhsNormInitial;
 		protected INonLinearParentAnalyzer parentAnalyzer = null;
 
 		internal NonLinearAnalyzerBase(IModel model, ISolver solver, INonLinearProvider provider,
@@ -50,22 +46,27 @@ namespace MGroup.Analyzers.NonLinear
 		}
 
 		public Dictionary<int, LinearAnalyzerLogFactory> LogFactories { get; } = new Dictionary<int, LinearAnalyzerLogFactory>();
+
 		public Dictionary<int, IAnalyzerLog[]> Logs { get; } = new Dictionary<int, IAnalyzerLog[]>();
 
 		public TotalDisplacementsPerIterationLog TotalDisplacementsPerIterationLog { get; set; }
+
 		public Dictionary<int, TotalLoadsDisplacementsPerIncrementLog> IncrementalLogs { get; }
 			= new Dictionary<int, TotalLoadsDisplacementsPerIncrementLog>();
 
 		public IParentAnalyzer ParentAnalyzer
 		{
 			get => parentAnalyzer;
-			set => parentAnalyzer = (INonLinearParentAnalyzer)value; //TODO: remove this cast. Now it only serves as a check
+			set => parentAnalyzer = (INonLinearParentAnalyzer)value;
 		}
 
 		public void BuildMatrices()
 		{
-			if (parentAnalyzer == null) throw new InvalidOperationException(
+			if (parentAnalyzer == null)
+			{
+				throw new InvalidOperationException(
 				"This Newton-Raphson nonlinear analyzer has no parent.");
+			}
 
 			parentAnalyzer.BuildMatrices();
 		}
@@ -73,11 +74,8 @@ namespace MGroup.Analyzers.NonLinear
 		public void Initialize(bool isFirstAnalysis)
 		{
 			InitializeInternalVectors();
-			//solver.Initialize(); //TODO: Using this needs refactoring
 		}
 
-		//TODO: Internal Rhs vectors are created and destroyed at each iteration. It would be more efficient to store them as
-		//      vectors and then overwrite them.
 		protected Dictionary<int, IVector> CalculateInternalRhs(int currentIncrement, int iteration)
 		{
 			var internalRhsVectors = new Dictionary<int, IVector>();
@@ -87,7 +85,6 @@ namespace MGroup.Analyzers.NonLinear
 
 				if (currentIncrement == 0 && iteration == 0)
 				{
-					//TODO: instead of Clear() and then AddIntoThis(), use only CopyFromVector()
 					du[id].Clear();
 					uPlusdu[id].Clear();
 					du[id].AddIntoThis(linearSystem.Solution);
@@ -96,24 +93,18 @@ namespace MGroup.Analyzers.NonLinear
 				}
 				else
 				{
-
 					du[id].AddIntoThis(linearSystem.Solution);
-					//TODO: instead of Clear() and then AddIntoThis(), use only CopyFromVector()
 					uPlusdu[id].Clear();
 					uPlusdu[id].AddIntoThis(u[id]);
 					uPlusdu[id].AddIntoThis(du[id]);
 				}
-				//Vector<double> internalRhs = (Vector<double>)subdomain.GetRhsFromSolution(u[subdomain.ID], du[subdomain.ID]);
-
-				//TODO: remove cast
-				IVector internalRhs = subdomainUpdaters[id].GetRhsFromSolution(uPlusdu[id], du[id]);//TODOMaria this calculates the internal forces
-				provider.ProcessInternalRhs(linearSystem.Subdomain, uPlusdu[id], internalRhs);//TODOMaria this does nothing
-				//(new Vector<double>(u[subdomain.ID] + du[subdomain.ID])).Data);
+				IVector internalRhs = subdomainUpdaters[id].GetRhsFromSolution(uPlusdu[id], du[id]);
+				provider.ProcessInternalRhs(linearSystem.Subdomain, uPlusdu[id], internalRhs);
 
 				if (parentAnalyzer != null)
 				{
 					IVector otherRhsComponents = parentAnalyzer.GetOtherRhsComponents(linearSystem, uPlusdu[id]);
-					internalRhs.AddIntoThis(otherRhsComponents);//TODOMaria this does nothing for the static problem
+					internalRhs.AddIntoThis(otherRhsComponents);
 				}
 
 				internalRhsVectors.Add(id, internalRhs);
@@ -129,16 +120,13 @@ namespace MGroup.Analyzers.NonLinear
 			{
 				int id = linearSystem.Subdomain.ID;
 
-				linearSystem.RhsVector.Clear(); //TODO: we can copy rhs[subdomain.ID] and then scale it instead of clearing and adding.
+				linearSystem.RhsVector.Clear();
 
-				// External forces = loadFactor * total external forces
-				//TODO: the next line adds a vector to itself many times. This is called multiplication and is much faster.
 				for (int j = 0; j <= currentIncrement; j++)
 				{
-					linearSystem.RhsVector.AddIntoThis(rhs[id]);//TODOMaria this adds the external forces
+					linearSystem.RhsVector.AddIntoThis(rhs[id]);
 				}
 
-				// Residual forces = external - internal
 				linearSystem.RhsVector.SubtractIntoThis(internalRhs[id]);
 
 				model.GlobalDofOrdering.AddVectorSubdomainToGlobal(linearSystem.Subdomain, linearSystem.RhsVector, globalRhs);
@@ -154,7 +142,7 @@ namespace MGroup.Analyzers.NonLinear
 			}
 		}
 
-		protected virtual void InitializeInternalVectors()//TODOMaria: this is probably where the initial internal nodal vector is calculated
+		protected virtual void InitializeInternalVectors()
 		{
 			globalRhs = Vector.CreateZero(model.GlobalDofOrdering.NumGlobalFreeDofs);
 			rhs.Clear();
@@ -206,7 +194,7 @@ namespace MGroup.Analyzers.NonLinear
 			foreach (ILinearSystem linearSystem in linearSystems.Values)
 			{
 				int id = linearSystem.Subdomain.ID;
-				linearSystem.RhsVector.Clear(); //TODO: why clear it if it is going to be overwritten immediately afterwards?
+				linearSystem.RhsVector.Clear();
 				model.GlobalDofOrdering.ExtractVectorSubdomainFromGlobal(linearSystem.Subdomain, globalRhs,
 					linearSystem.RhsVector);
 			}
@@ -215,20 +203,21 @@ namespace MGroup.Analyzers.NonLinear
 		protected void StoreLogResults(DateTime start, DateTime end)
 		{
 			foreach (int id in Logs.Keys)
+			{
 				foreach (var l in Logs[id])
 				{
 					l.StoreResults(start, end, u[id]);
 				}
+			}
 		}
 
-		protected void UpdateInternalVectors()//TODOMaria this is where I should add the calculation of the internal nodal force vector
+		protected void UpdateInternalVectors()
 		{
 			globalRhs.Clear();
 			foreach (ILinearSystem linearSystem in linearSystems.Values)
 			{
 				int id = linearSystem.Subdomain.ID;
 
-				//TODO: directly copy into linearSystem.RhsVector and then scale that.
 				IVector r = linearSystem.RhsVector.Copy();
 				r.ScaleIntoThis(1 / (double)numIncrements);
 				rhs[id] = r;
@@ -242,16 +231,9 @@ namespace MGroup.Analyzers.NonLinear
 			foreach (ILinearSystem linearSystem in linearSystems.Values)
 			{
 				linearSystem.RhsVector.CopyFrom(rhs[linearSystem.Subdomain.ID]);
-				//linearSystem.RhsVector.Multiply(step + 1);
 			}
 		}
 
-		//TODO: this should be implemented as a (virtual?) template method. That requires restructuring the helper methods, such
-		//      that only the parts of the algorithm that are different for LoadControl, DisplacementControl, etc, are delegated
-		//      to the concrete implementation. E.g. instead of the load incrementing be done by many different helper methods
-		//      (e.g. ScaleSubdomainConstraints()), which are called in various parts of the algorithm, we could have an abstract
-		//      IncrementLoading() method, where LoadControl would increment the nodal loads, DisplacementControl the
-		//      prescribed displacements, etc.
 		public abstract void Solve();
 	}
 }

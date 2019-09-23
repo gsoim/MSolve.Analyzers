@@ -6,6 +6,7 @@
 		IDirichletEquivalentLoadsAssembler DirichletLoadsAssembler { get; }
 
 		void ClearMatrices();
+
 		void Reset();
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using MGroup.Analyzers.Interfaces;
 using MGroup.LinearAlgebra.Vectors;
 using MGroup.MSolve.Discretization.FreedomDegrees;
@@ -26,6 +27,7 @@ namespace MGroup.Analyzers
 		}
 
 		public Dictionary<int, ILogFactory> LogFactories { get; } = new Dictionary<int, ILogFactory>();
+
 		public Dictionary<int, IAnalyzerLog[]> Logs { get; } = new Dictionary<int, IAnalyzerLog[]>();
 
 		public IParentAnalyzer ParentAnalyzer { get; set; }
