@@ -1,4 +1,4 @@
-﻿namespace MGroup.Analyzers
+namespace MGroup.Analyzers
 {
 	using System;
 	using System.Collections.Generic;
@@ -11,6 +11,9 @@
 	using MGroup.Solvers;
 	using MGroup.Solvers.LinearSystems;
 
+	/// <summary>
+	/// This class solves the linear system.
+	/// </summary>
 	public class LinearAnalyzer : IChildAnalyzer
 	{
 		private readonly IReadOnlyDictionary<int, ILinearSystem> linearSystems;
@@ -18,6 +21,12 @@
 		private readonly IAnalyzerProvider provider;
 		private readonly ISolver solver;
 
+		/// <summary>
+		/// This class defines the linear anaylzer.
+		/// </summary>
+		/// <param name="model">Instance of the model that will be solved</param>
+		/// <param name="solver">Instance of the solver that will solve the linear system of equations</param>
+		/// <param name="provider">Instance of the problem type to be solved</param> 
 		public LinearAnalyzer(IModel model, ISolver solver, IAnalyzerProvider provider)
 		{
 			this.model = model;
@@ -40,19 +49,17 @@
 			}
 
 			ParentAnalyzer.BuildMatrices();
-			//solver.Initialize();
 		}
 
 		public void Initialize(bool isFirstAnalysis)
 		{
 			InitializeLogs();
-			//solver.Initialize(); //TODO: Using this needs refactoring
 		}
 
 		public void Solve()
 		{
 			DateTime start = DateTime.Now;
-			AddEquivalentNodalLoadsToRHS(); //TODO: The initial rhs (from other loads) should also be built by the analyzer instead of the model.
+			AddEquivalentNodalLoadsToRHS();
 			solver.Solve();
 			DateTime end = DateTime.Now;
 			StoreLogResults(start, end);
@@ -64,21 +71,15 @@
 			{
 				try
 				{
-					// Make sure there is at least one non zero prescribed displacement.
 					(INode node, IDofType dof, double displacement) = linearSystem.Subdomain.Constraints.Find(du => du != 0.0);
-
-					//TODO: the following 2 lines are meaningless outside diplacement control (and even then, they are not so clear).
 					double scalingFactor = 1;
 					IVector initialFreeSolution = linearSystem.CreateZeroVector();
-
 					IVector equivalentNodalLoads = provider.DirichletLoadsAssembler.GetEquivalentNodalLoads(
 						linearSystem.Subdomain, initialFreeSolution, scalingFactor);
 					linearSystem.RhsVector.SubtractIntoThis(equivalentNodalLoads);
 				}
 				catch (KeyNotFoundException)
 				{
-					// There aren't any non zero prescribed displacements, therefore we do not have to calculate the equivalent
-					// nodal loads, which is an expensive operation (all elements are accessed, their stiffness is built, etc..)
 				}
 			}
 		}
@@ -95,10 +96,12 @@
 		private void StoreLogResults(DateTime start, DateTime end)
 		{
 			foreach (int id in Logs.Keys)
+			{
 				foreach (var l in Logs[id])
 				{
 					l.StoreResults(start, end, linearSystems[id].Solution);
 				}
+			}
 		}
 	}
 }
