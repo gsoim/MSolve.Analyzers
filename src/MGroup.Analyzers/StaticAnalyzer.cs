@@ -81,13 +81,21 @@ namespace MGroup.Analyzers
 				linearSystem.RhsVector = linearSystem.Subdomain.Forces;
 			}
 
-			if (ChildAnalyzer == null) throw new InvalidOperationException("Static analyzer must contain an embedded analyzer.");
+			if (ChildAnalyzer == null)
+			{
+				throw new InvalidOperationException("Static analyzer must contain an embedded analyzer.");
+			}
+
 			ChildAnalyzer.Initialize(isFirstAnalysis);
 		}
 
 		public void Solve()
 		{
-			if (ChildAnalyzer == null) throw new InvalidOperationException("Static analyzer must contain an embedded analyzer.");
+			if (ChildAnalyzer == null)
+			{
+				throw new InvalidOperationException("Static analyzer must contain an embedded analyzer.");
+			}
+
 			ChildAnalyzer.Solve();
 		}
 	}

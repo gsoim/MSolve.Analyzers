@@ -32,7 +32,10 @@ namespace MGroup.Analyzers
 
 		public void BuildMatrices()
 		{
-			if (ParentAnalyzer == null) throw new InvalidOperationException("This linear analyzer has no parent.");
+			if (ParentAnalyzer == null)
+			{
+				throw new InvalidOperationException("This linear analyzer has no parent.");
+			}
 
 			ParentAnalyzer.BuildMatrices();
 			//solver.Initialize();
@@ -81,14 +84,19 @@ namespace MGroup.Analyzers
 		private void InitializeLogs()
 		{
 			Logs.Clear();
-			foreach (int id in LogFactories.Keys) Logs.Add(id, LogFactories[id].CreateLogs());
+			foreach (int id in LogFactories.Keys)
+			{
+				Logs.Add(id, LogFactories[id].CreateLogs());
+			}
 		}
 
 		private void StoreLogResults(DateTime start, DateTime end)
 		{
 			foreach (int id in Logs.Keys)
 				foreach (var l in Logs[id])
+				{
 					l.StoreResults(start, end, linearSystems[id].Solution);
+				}
 		}
 	}
 }

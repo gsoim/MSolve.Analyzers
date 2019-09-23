@@ -159,7 +159,11 @@ namespace MGroup.Analyzers.Dynamic
 			//InitializeMatrices();
 			InitializeRhs();
 
-			if (ChildAnalyzer == null) throw new InvalidOperationException("Newmark analyzer must contain an embedded analyzer.");
+			if (ChildAnalyzer == null)
+			{
+				throw new InvalidOperationException("Newmark analyzer must contain an embedded analyzer.");
+			}
+
 			ChildAnalyzer.Initialize(isFirstAnalysis);
 		}
 
@@ -171,7 +175,11 @@ namespace MGroup.Analyzers.Dynamic
 				Debug.WriteLine("Newmark step: {0}", t);
 
 				IDictionary<int, IVector> rhsVectors = provider.GetRhsFromHistoryLoad(t);
-				foreach (var l in linearSystems.Values) l.RhsVector = rhsVectors[l.Subdomain.ID];
+				foreach (var l in linearSystems.Values)
+				{
+					l.RhsVector = rhsVectors[l.Subdomain.ID];
+				}
+
 				InitializeRhs();
 				CalculateRhsImplicit();
 
@@ -228,8 +236,14 @@ namespace MGroup.Analyzers.Dynamic
 
 				// Account for initial conditions coming from a previous solution.
 				//TODO: This doesn't work as intended. The solver (previously the LinearSystem) initializes the solution to zero.
-				if (linearSystem.Solution != null) temperature.Add(id, linearSystem.Solution.Copy());
-				else temperature.Add(id, linearSystem.CreateZeroVector());
+				if (linearSystem.Solution != null)
+				{
+					temperature.Add(id, linearSystem.Solution.Copy());
+				}
+				else
+				{
+					temperature.Add(id, linearSystem.CreateZeroVector());
+				}
 			}
 		}
 
@@ -255,7 +269,9 @@ namespace MGroup.Analyzers.Dynamic
 				if (ResultStorages.ContainsKey(id))
 					if (ResultStorages[id] != null)
 						foreach (var l in ChildAnalyzer.Logs[id])
+						{
 							ResultStorages[id].StoreResults(start, end, l);
+						}
 			}
 		}
 

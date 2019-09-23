@@ -1,15 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using MGroup.Analyzers.Interfaces;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.MSolve.Discretization.Interfaces;
-using MGroup.MSolve.Logging;
-using MGroup.Solvers;
-using MGroup.Solvers.LinearSystems;
-
 namespace MGroup.Analyzers.NonLinear
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Diagnostics;
+
+	using MGroup.Analyzers.Interfaces;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.MSolve.Discretization.Interfaces;
+	using MGroup.MSolve.Logging;
+	using MGroup.Solvers;
+	using MGroup.Solvers.LinearSystems;
+
 	public class DisplacementControlAnalyzer : NonLinearAnalyzerBase
 	{
 		/// <summary>
@@ -55,12 +56,17 @@ namespace MGroup.Analyzers.NonLinear
 					solver.Solve();
 
 					Dictionary<int, IVector> internalRhsVectors = CalculateInternalRhs(increment, iteration);
-					errorNorm = UpdateResidualForcesAndNorm(increment, internalRhsVectors); // This also sets the rhs vectors in linear systems.
-																							//Console.WriteLine($"Increment {increment}, iteration {iteration}: norm2(error) = {errorNorm}");
+					errorNorm = UpdateResidualForcesAndNorm(increment, internalRhsVectors);
 
-					if (iteration == 0) firstError = errorNorm;
+					if (iteration == 0)
+					{
+						firstError = errorNorm;
+					}
 
-					if (TotalDisplacementsPerIterationLog != null) TotalDisplacementsPerIterationLog.StoreDisplacements(uPlusdu);
+					if (TotalDisplacementsPerIterationLog != null)
+					{
+						TotalDisplacementsPerIterationLog.StoreDisplacements(uPlusdu);
+					}
 
 					if (errorNorm < residualTolerance)
 					{
@@ -85,14 +91,10 @@ namespace MGroup.Analyzers.NonLinear
 				SaveMaterialStateAndUpdateSolution();
 			}
 
-			// TODO: Logging should be done at each iteration. And it should be done using pull observers
 			DateTime end = DateTime.Now;
 			StoreLogResults(start, end);
 		}
 
-		/// <summary>
-		/// Initializes internal vectors
-		/// </summary>
 		protected override void InitializeInternalVectors()
 		{
 			base.InitializeInternalVectors();
@@ -102,20 +104,20 @@ namespace MGroup.Analyzers.NonLinear
 			}
 		}
 
-		/// <summary>
-		/// Adds equivalent nodal loads created by the prescribed DOFs to the right-hand-side vector.
-		/// </summary>
-		private void AddEquivalentNodalLoadsToRHS(int currentIncrement, int iteration)
+		private void AddEquivalentNodalLoadsToRHS(int iteration, int iteration1)
 		{
 			if (iteration != 0)
+			{
 				return;
+			}
 
 			foreach (ILinearSystem linearSystem in linearSystems.Values)
 			{
 				int id = linearSystem.Subdomain.ID;
 
-				double scalingFactor = 1; //((double)currentIncrement + 2) / (currentIncrement + 1); //2; //
-				IVector equivalentNodalLoads = provider.DirichletLoadsAssembler.GetEquivalentNodalLoads(linearSystem.Subdomain,
+				double scalingFactor = 1;
+				IVector equivalentNodalLoads = provider.DirichletLoadsAssembler.GetEquivalentNodalLoads(
+					linearSystem.Subdomain,
 					u[id], scalingFactor);
 				linearSystem.RhsVector.SubtractIntoThis(equivalentNodalLoads);
 
@@ -123,19 +125,16 @@ namespace MGroup.Analyzers.NonLinear
 			}
 		}
 
-		/// <summary>
-		/// Scales the subdomain constraints.
-		/// This does nothing at all, as it is written right now.
-		/// </summary>
 		private void ScaleSubdomainConstraints(int currentIncrement)
 		{
 			if (currentIncrement == 0)
+			{
 				return;
+			}
 
 			foreach (ILinearSystem linearSystem in linearSystems.Values)
 			{
-				//int idx = FindSubdomainIdx(linearSystems, linearSystem);
-				double scalingFactor = 1; // ((double)currentIncrement + 2) / (currentIncrement + 1);
+				double scalingFactor = 1;
 				subdomainUpdaters[linearSystem.Subdomain.ID].ScaleConstraints(scalingFactor);
 			}
 		}

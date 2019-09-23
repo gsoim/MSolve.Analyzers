@@ -133,7 +133,10 @@ namespace MGroup.Analyzers.NonLinear
 
 				// External forces = loadFactor * total external forces
 				//TODO: the next line adds a vector to itself many times. This is called multiplication and is much faster.
-				for (int j = 0; j <= currentIncrement; j++) linearSystem.RhsVector.AddIntoThis(rhs[id]);//TODOMaria this adds the external forces
+				for (int j = 0; j <= currentIncrement; j++)
+				{
+					linearSystem.RhsVector.AddIntoThis(rhs[id]);//TODOMaria this adds the external forces
+				}
 
 				// Residual forces = external - internal
 				linearSystem.RhsVector.SubtractIntoThis(internalRhs[id]);
@@ -145,7 +148,10 @@ namespace MGroup.Analyzers.NonLinear
 
 		protected void ClearIncrementalSolutionVector()
 		{
-			foreach (ILinearSystem linearSystem in linearSystems.Values) du[linearSystem.Subdomain.ID].Clear();
+			foreach (ILinearSystem linearSystem in linearSystems.Values)
+			{
+				du[linearSystem.Subdomain.ID].Clear();
+			}
 		}
 
 		protected virtual void InitializeInternalVectors()//TODOMaria: this is probably where the initial internal nodal vector is calculated
@@ -174,8 +180,15 @@ namespace MGroup.Analyzers.NonLinear
 		protected void InitializeLogs()
 		{
 			Logs.Clear();
-			foreach (int id in LogFactories.Keys) Logs.Add(id, LogFactories[id].CreateLogs());
-			foreach (var log in IncrementalLogs.Values) log.Initialize();
+			foreach (int id in LogFactories.Keys)
+			{
+				Logs.Add(id, LogFactories[id].CreateLogs());
+			}
+
+			foreach (var log in IncrementalLogs.Values)
+			{
+				log.Initialize();
+			}
 		}
 
 		protected void SaveMaterialStateAndUpdateSolution()
@@ -203,7 +216,9 @@ namespace MGroup.Analyzers.NonLinear
 		{
 			foreach (int id in Logs.Keys)
 				foreach (var l in Logs[id])
+				{
 					l.StoreResults(start, end, u[id]);
+				}
 		}
 
 		protected void UpdateInternalVectors()//TODOMaria this is where I should add the calculation of the internal nodal force vector

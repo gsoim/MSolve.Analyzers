@@ -32,7 +32,11 @@ namespace MGroup.Analyzers.NonLinear
 			get => maxIterationsPerIncrement;
 			set
 			{
-				if (value < 1) throw new ArgumentException("Max iterations per increment must be >= 1");
+				if (value < 1)
+				{
+					throw new ArgumentException("Max iterations per increment must be >= 1");
+				}
+
 				maxIterationsPerIncrement = value;
 			}
 		}
@@ -42,7 +46,11 @@ namespace MGroup.Analyzers.NonLinear
 			get => numIterationsForMatrixRebuild;
 			set
 			{
-				if (value < 1) throw new ArgumentException("Iterations number for matrix rebuild must be >= 1");
+				if (value < 1)
+				{
+					throw new ArgumentException("Iterations number for matrix rebuild must be >= 1");
+				}
+
 				numIterationsForMatrixRebuild = value;
 			}
 		}
@@ -52,7 +60,11 @@ namespace MGroup.Analyzers.NonLinear
 			get => residualTolerance;
 			set
 			{
-				if (value <= 0.0) throw new ArgumentException("Residual tolerance must be positive");
+				if (value <= 0.0)
+				{
+					throw new ArgumentException("Residual tolerance must be positive");
+				}
+
 				residualTolerance = value;
 			}
 		}

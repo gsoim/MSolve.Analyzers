@@ -49,8 +49,16 @@ namespace MGroup.Analyzers.NonLinear
 				int iteration = 0;
 				for (iteration = 0; iteration < maxIterationsPerIncrement; iteration++)
 				{
-					if (iteration == maxIterationsPerIncrement - 1) return;
-					if (Double.IsNaN(errorNorm)) return;
+					if (iteration == maxIterationsPerIncrement - 1)
+					{
+						return;
+					}
+
+					if (Double.IsNaN(errorNorm))
+					{
+						return;
+					}
+
 					solver.Solve();
 					Dictionary<int, IVector> internalRhsVectors = CalculateInternalRhs(increment, iteration);
 					double residualNormCurrent = UpdateResidualForcesAndNorm(increment, internalRhsVectors);

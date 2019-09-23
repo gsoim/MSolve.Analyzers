@@ -33,10 +33,17 @@ namespace MGroup.Analyzers.Tests
 			//                                                   dofs:   1,   2,   4,   5,   7,   8
 			var expectedSolution = Vector.CreateFromArray(new double[] { 150, 200, 150, 200, 150, 200 });
 			int numFreeDofs = 6;
-			if (solution.Length != 6) return false;
+			if (solution.Length != 6)
+			{
+				return false;
+			}
+
 			for (int i = 0; i < numFreeDofs; ++i)
 			{
-				if (!comparer.AreEqual(expectedSolution[i], solution[i])) return false;
+				if (!comparer.AreEqual(expectedSolution[i], solution[i]))
+				{
+					return false;
+				}
 			}
 			return true;
 		}
@@ -66,7 +73,10 @@ namespace MGroup.Analyzers.Tests
 			nodes[7] = new Node(id: 7, x: 1.0, y: 2.0);
 			nodes[8] = new Node(id: 8, x: 2.0, y: 2.0);
 
-			for (int i = 0; i < numNodes; ++i) model.NodesDictionary[i] = nodes[i];
+			for (int i = 0; i < numNodes; ++i)
+			{
+				model.NodesDictionary[i] = nodes[i];
+			}
 
 			// Elements
 			int numElements = 4;
@@ -80,7 +90,11 @@ namespace MGroup.Analyzers.Tests
 			for (int i = 0; i < numElements; ++i)
 			{
 				var elementWrapper = new Element() { ID = i, ElementType = elements[i] };
-				foreach (var node in elements[i].Nodes) elementWrapper.AddNode(node);
+				foreach (var node in elements[i].Nodes)
+				{
+					elementWrapper.AddNode(node);
+				}
+
 				model.ElementsDictionary[i] = elementWrapper;
 				model.SubdomainsDictionary[subdomainID].Elements.Add(elementWrapper);
 			}
