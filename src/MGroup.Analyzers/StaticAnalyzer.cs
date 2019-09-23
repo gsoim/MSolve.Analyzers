@@ -1,4 +1,4 @@
-﻿namespace MGroup.Analyzers
+namespace MGroup.Analyzers
 {
 	using System;
 	using System.Collections.Generic;
@@ -10,6 +10,9 @@
 	using MGroup.Solvers;
 	using MGroup.Solvers.LinearSystems;
 
+	/// <summary>
+	/// This class solves static problems.
+	/// </summary>
 	public class StaticAnalyzer : INonLinearParentAnalyzer
 	{
 		private readonly IReadOnlyDictionary<int, ILinearSystem> linearSystems;
@@ -17,6 +20,13 @@
 		private readonly IStaticProvider provider;
 		private readonly ISolver solver;
 
+		/// <summary>
+		/// This class defines the static analyzer.
+		/// </summary>
+		/// <param name="model">Instance of the model that will be solved</param>
+		/// <param name="solver">Instance of the solver that will solve the linear system of equations</param>
+		/// <param name="provider">Instance of the problem type to be solved</param> 
+		/// <param name="childAnalyzer">Instance of the child analyzer that defines whether the problem is linear or nonlinear</param>
 		public StaticAnalyzer(IModel model, ISolver solver, IStaticProvider provider,
 			IChildAnalyzer childAnalyzer)
 		{
@@ -32,6 +42,9 @@
 
 		public IChildAnalyzer ChildAnalyzer { get; }
 
+		/// <summary>
+		/// Builds the stiffness matrix of the structure.
+		/// </summary>
 		public void BuildMatrices()
 		{
 			foreach (ILinearSystem linearSystem in linearSystems.Values)
@@ -40,23 +53,26 @@
 			}
 		}
 
+		/// <summary>
+		/// Calculates other components of the right-hand-side vector
+		/// </summary>
 		public IVector GetOtherRhsComponents(ILinearSystem linearSystem, IVector currentSolution)
 		{
-			//TODO: use a ZeroVector class that avoid doing useless operations or refactor this method. E.g. let this method
-			// alter the child analyzer's rhs vector, instead of the opposite (which is currently done).
 			return linearSystem.CreateZeroVector();
 		}
 
+		/// <summary>
+		/// Initializes the values of the system to be solved.
+		/// </summary>
 		public void Initialize(bool isFirstAnalysis = true)
 		{
 			if (isFirstAnalysis)
 			{
-				// The order in which the next initializations happen is very important.
 				model.ConnectDataStructures();
 				solver.OrderDofs(false);
 				foreach (ILinearSystem linearSystem in linearSystems.Values)
 				{
-					linearSystem.Reset(); // Necessary to define the linear system's size
+					linearSystem.Reset();
 					linearSystem.Subdomain.Forces = Vector.CreateZero(linearSystem.Size);
 				}
 			}
@@ -64,18 +80,13 @@
 			{
 				foreach (ILinearSystem linearSystem in linearSystems.Values)
 				{
-					//TODO: Perhaps these shouldn't be done if an analysis has already been executed. The model will not be
-					//      modified. Why should the linear system be?
 					linearSystem.Reset();
 					linearSystem.Subdomain.Forces = Vector.CreateZero(linearSystem.Size);
 				}
 			}
 
-			//TODO: Perhaps this should be called by the child analyzer
 			BuildMatrices();
 
-			// Loads must be created after building the matrices.
-			//TODO: Some loads may not have to be recalculated each time the stiffness changes.
 			model.AssignLoads(solver.DistributeNodalLoads);
 			foreach (ILinearSystem linearSystem in linearSystems.Values)
 			{
@@ -90,6 +101,9 @@
 			ChildAnalyzer.Initialize(isFirstAnalysis);
 		}
 
+		/// <summary>
+		/// Solves the system and calculates the displacement vector.
+		/// </summary>
 		public void Solve()
 		{
 			if (ChildAnalyzer == null)
