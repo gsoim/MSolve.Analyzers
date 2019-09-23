@@ -11,6 +11,9 @@ namespace MGroup.Analyzers.NonLinear
 	using MGroup.Solvers;
 	using MGroup.Solvers.LinearSystems;
 
+	/// <summary>
+	/// This class represents the base class of all nonlinear anaylsers and contains the basic information necessary for other analyzers
+	/// </summary>
 	public abstract class NonLinearAnalyzerBase : IChildAnalyzer
 	{
 		protected readonly IReadOnlyDictionary<int, ILinearSystem> linearSystems;
@@ -60,6 +63,9 @@ namespace MGroup.Analyzers.NonLinear
 			set => parentAnalyzer = (INonLinearParentAnalyzer)value;
 		}
 
+		/// <summary>
+		/// Builds the tangent stiffness matrix of the system.
+		/// </summary>
 		public void BuildMatrices()
 		{
 			if (parentAnalyzer == null)
@@ -71,6 +77,9 @@ namespace MGroup.Analyzers.NonLinear
 			parentAnalyzer.BuildMatrices();
 		}
 
+		/// <summary>
+		/// Initializes internal vector before the first analysis.
+		/// </summary>
 		public void Initialize(bool isFirstAnalysis)
 		{
 			InitializeInternalVectors();
@@ -234,6 +243,9 @@ namespace MGroup.Analyzers.NonLinear
 			}
 		}
 
+		/// <summary>
+		/// This class solves system and calculates the displacements vector.
+		/// </summary>
 		public abstract void Solve();
 	}
 }

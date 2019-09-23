@@ -11,6 +11,9 @@ namespace MGroup.Analyzers.NonLinear
 	using MGroup.Solvers;
 	using MGroup.Solvers.LinearSystems;
 
+	/// <summary>
+	/// This class solves the nonlinear system of equations using the displacement control method
+	/// </summary>
 	public class DisplacementControlAnalyzer : NonLinearAnalyzerBase
 	{
 		/// <summary>
