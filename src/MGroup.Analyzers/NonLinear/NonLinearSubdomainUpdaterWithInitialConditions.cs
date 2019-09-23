@@ -7,11 +7,11 @@ using MGroup.MSolve.Discretization.Interfaces;
 
 namespace MGroup.Analyzers.NonLinear
 {
-    /// <summary>
-    /// Subdomain state update class that accounts for non zero initial conditions (displacements).
-    /// Authors: Gerasimos Sotiropoulos
-    /// </summary>
-    public class NonLinearSubdomainUpdaterWithInitialConditions : INonLinearSubdomainUpdater
+	/// <summary>
+	/// Subdomain state update class that accounts for non zero initial conditions (displacements).
+	/// Authors: Gerasimos Sotiropoulos
+	/// </summary>
+	public class NonLinearSubdomainUpdaterWithInitialConditions : INonLinearSubdomainUpdater
 	{
 		private readonly ISubdomain subdomain;
 

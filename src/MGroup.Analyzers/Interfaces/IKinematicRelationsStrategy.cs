@@ -2,8 +2,8 @@
 
 namespace MGroup.Analyzers.Interfaces
 {
-    public interface IKinematicRelationsStrategy
-    {
-        double[,] GetNodalKinematicRelationsMatrix(INode boundaryNode);
-    }
+	public interface IKinematicRelationsStrategy
+	{
+		double[,] GetNodalKinematicRelationsMatrix(INode boundaryNode);
+	}
 }

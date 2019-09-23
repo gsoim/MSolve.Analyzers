@@ -5,8 +5,8 @@ using MGroup.MSolve.Discretization.Interfaces;
 
 namespace MGroup.Analyzers.Interfaces
 {
-    public interface IDirichletEquivalentLoadsAssembler
-    {
-        IVector GetEquivalentNodalLoads(ISubdomain subdomain, IVectorView solution, double constraintScalingFactor);
-    }
+	public interface IDirichletEquivalentLoadsAssembler
+	{
+		IVector GetEquivalentNodalLoads(ISubdomain subdomain, IVectorView solution, double constraintScalingFactor);
+	}
 }

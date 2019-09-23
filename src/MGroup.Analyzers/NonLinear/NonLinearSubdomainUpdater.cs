@@ -4,34 +4,34 @@ using MGroup.MSolve.Discretization.Interfaces;
 
 namespace MGroup.Analyzers.NonLinear
 {
-    public class NonLinearSubdomainUpdater : INonLinearSubdomainUpdater
-    {
-        private readonly ISubdomain subdomain;
+	public class NonLinearSubdomainUpdater : INonLinearSubdomainUpdater
+	{
+		private readonly ISubdomain subdomain;
 
-        public NonLinearSubdomainUpdater(ISubdomain subdomain)
-        {
-            this.subdomain = subdomain;
-        }
+		public NonLinearSubdomainUpdater(ISubdomain subdomain)
+		{
+			this.subdomain = subdomain;
+		}
 
-        public void ScaleConstraints(double scalingFactor)
-        {
-            this.subdomain.ScaleConstraints(scalingFactor);
-        }
+		public void ScaleConstraints(double scalingFactor)
+		{
+			this.subdomain.ScaleConstraints(scalingFactor);
+		}
 
-        public IVector GetRhsFromSolution(IVectorView solution, IVectorView dSolution)
-        {
-            return subdomain.GetRhsFromSolution(solution, dSolution);
-        }
+		public IVector GetRhsFromSolution(IVectorView solution, IVectorView dSolution)
+		{
+			return subdomain.GetRhsFromSolution(solution, dSolution);
+		}
 
-        public void ResetState()
-        {
-            this.subdomain.ClearMaterialStresses();
-        }
+		public void ResetState()
+		{
+			this.subdomain.ClearMaterialStresses();
+		}
 
-        public void UpdateState()
-        {
-            this.subdomain.SaveMaterialState();
-        }
-    }
+		public void UpdateState()
+		{
+			this.subdomain.SaveMaterialState();
+		}
+	}
 }
 
