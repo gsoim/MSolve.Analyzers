@@ -10,11 +10,20 @@ using MGroup.Solvers.LinearSystems;
 
 namespace MGroup.Analyzers.NonLinear
 {
-	/// <summary>
-	/// This only works if there are no nodal loads or any loading condition other than prescribed displacements.
-	/// </summary>
 	public class DisplacementControlAnalyzer : NonLinearAnalyzerBase
 	{
+		/// <summary>
+		/// This class solves the linearized geometrically nonlinear system of equations according to displacement control incremental-iterative method.
+		/// This only works if there are no nodal loads or any loading condition other than prescribed displacements.
+		/// </summary>
+		/// <param name="model">Instance of the model that will be solved</param>
+		/// <param name="solver">Instance of the solver that will solve the linear system of equations</param>
+		/// <param name="provider">Instance of the problem type to be solved</param>
+		/// <param name="subdomainUpdaters">Instance that updates constraints, right-hand-side vector, updates and resets state</param>
+		/// <param name="numIncrements">Number of total load increments</param>
+		/// <param name="maxIterationsPerIncrement">Number of maximum iterations within a load increment</param>
+		/// <param name="numIterationsForMatrixRebuild">Number of iterations for the rebuild of the siffness matrix within a load increment</param>
+		/// <param name="residualTolerance">Tolerance for the convergence criterion of the residual forces</param>
 		private DisplacementControlAnalyzer(IModel model, ISolver solver, INonLinearProvider provider,
 			IReadOnlyDictionary<int, INonLinearSubdomainUpdater> subdomainUpdaters,
 			int numIncrements, int maxIterationsPerIncrement, int numIterationsForMatrixRebuild, double residualTolerance) :
@@ -22,6 +31,9 @@ namespace MGroup.Analyzers.NonLinear
 				numIterationsForMatrixRebuild, residualTolerance)
 		{ }
 
+		/// <summary>
+		/// Solves the nonlinear equations and calculates the displacements vector
+		/// </summary>
 		public override void Solve()
 		{
 			InitializeLogs();
@@ -44,7 +56,7 @@ namespace MGroup.Analyzers.NonLinear
 
 					Dictionary<int, IVector> internalRhsVectors = CalculateInternalRhs(increment, iteration);
 					errorNorm = UpdateResidualForcesAndNorm(increment, internalRhsVectors); // This also sets the rhs vectors in linear systems.
-					//Console.WriteLine($"Increment {increment}, iteration {iteration}: norm2(error) = {errorNorm}");
+																							//Console.WriteLine($"Increment {increment}, iteration {iteration}: norm2(error) = {errorNorm}");
 
 					if (iteration == 0) firstError = errorNorm;
 
@@ -61,7 +73,7 @@ namespace MGroup.Analyzers.NonLinear
 						}
 						break;
 					}
-					
+
 					SplitResidualForcesToSubdomains();
 					if ((iteration + 1) % numIterationsForMatrixRebuild == 0)
 					{
@@ -78,6 +90,9 @@ namespace MGroup.Analyzers.NonLinear
 			StoreLogResults(start, end);
 		}
 
+		/// <summary>
+		/// Initializes internal vectors
+		/// </summary>
 		protected override void InitializeInternalVectors()
 		{
 			base.InitializeInternalVectors();
@@ -87,6 +102,9 @@ namespace MGroup.Analyzers.NonLinear
 			}
 		}
 
+		/// <summary>
+		/// Adds equivalent nodal loads created by the prescribed DOFs to the right-hand-side vector.
+		/// </summary>
 		private void AddEquivalentNodalLoadsToRHS(int currentIncrement, int iteration)
 		{
 			if (iteration != 0)
@@ -97,7 +115,7 @@ namespace MGroup.Analyzers.NonLinear
 				int id = linearSystem.Subdomain.ID;
 
 				double scalingFactor = 1; //((double)currentIncrement + 2) / (currentIncrement + 1); //2; //
-				IVector equivalentNodalLoads = provider.DirichletLoadsAssembler.GetEquivalentNodalLoads(linearSystem.Subdomain, 
+				IVector equivalentNodalLoads = provider.DirichletLoadsAssembler.GetEquivalentNodalLoads(linearSystem.Subdomain,
 					u[id], scalingFactor);
 				linearSystem.RhsVector.SubtractIntoThis(equivalentNodalLoads);
 
@@ -105,7 +123,10 @@ namespace MGroup.Analyzers.NonLinear
 			}
 		}
 
-		// This does nothing at all, as it is written right now
+		/// <summary>
+		/// Scales the subdomain constraints.
+		/// This does nothing at all, as it is written right now.
+		/// </summary>
 		private void ScaleSubdomainConstraints(int currentIncrement)
 		{
 			if (currentIncrement == 0)
@@ -119,9 +140,9 @@ namespace MGroup.Analyzers.NonLinear
 			}
 		}
 
-		public class Builder: NonLinearAnalyzerBuilderBase
+		public class Builder : NonLinearAnalyzerBuilderBase
 		{
-			public Builder(IModel model, ISolver solver, INonLinearProvider provider, int numIncrements):
+			public Builder(IModel model, ISolver solver, INonLinearProvider provider, int numIncrements) :
 				base(model, solver, provider, numIncrements)
 			{
 				MaxIterationsPerIncrement = 1000;
