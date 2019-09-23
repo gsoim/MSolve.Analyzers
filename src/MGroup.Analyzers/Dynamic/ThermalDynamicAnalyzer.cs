@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-
-using MGroup.Analyzers.Interfaces;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.MSolve.Discretization.Interfaces;
-using MGroup.MSolve.Logging;
-using MGroup.MSolve.Logging.Interfaces;
-using MGroup.Solvers;
-using MGroup.Solvers.LinearSystems;
-
-//TODO: Optimization: I could avoid initialization and GC of some vectors by reusing existing ones.
+﻿//TODO: Optimization: I could avoid initialization and GC of some vectors by reusing existing ones.
 //TODO: Use a base class for implicit time integration methods (perhaps to together with explicit)
 namespace MGroup.Analyzers.Dynamic
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Diagnostics;
+
+	using MGroup.Analyzers.Interfaces;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.MSolve.Discretization.Interfaces;
+	using MGroup.MSolve.Logging;
+	using MGroup.MSolve.Logging.Interfaces;
+	using MGroup.Solvers;
+	using MGroup.Solvers.LinearSystems;
+
 	/// <summary>
 	///
 	/// Authors: Yannis Kalogeris

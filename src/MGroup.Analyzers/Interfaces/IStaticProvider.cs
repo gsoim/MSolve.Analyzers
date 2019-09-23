@@ -1,8 +1,8 @@
-﻿using MGroup.LinearAlgebra.Matrices;
-using MGroup.MSolve.Discretization.Interfaces;
-
-namespace MGroup.Analyzers.Interfaces
+﻿namespace MGroup.Analyzers.Interfaces
 {
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.MSolve.Discretization.Interfaces;
+
 	public interface IStaticProvider : IAnalyzerProvider
 	{
 		/// <summary>

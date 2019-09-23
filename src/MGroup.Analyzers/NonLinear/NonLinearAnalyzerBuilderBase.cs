@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
-
-using MGroup.Analyzers.Interfaces;
-using MGroup.MSolve.Discretization.Interfaces;
-using MGroup.Solvers;
-
 namespace MGroup.Analyzers.NonLinear
 {
+	using System;
+	using System.Collections.Generic;
+
+	using MGroup.Analyzers.Interfaces;
+	using MGroup.MSolve.Discretization.Interfaces;
+	using MGroup.Solvers;
+
 	public abstract class NonLinearAnalyzerBuilderBase
 	{
 		protected int maxIterationsPerIncrement = 1000;

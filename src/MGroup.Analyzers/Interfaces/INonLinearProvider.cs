@@ -1,8 +1,8 @@
-﻿using MGroup.LinearAlgebra.Vectors;
-using MGroup.MSolve.Discretization.Interfaces;
-
-namespace MGroup.Analyzers.Interfaces
+﻿namespace MGroup.Analyzers.Interfaces
 {
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.MSolve.Discretization.Interfaces;
+
 	public interface INonLinearProvider : IAnalyzerProvider
 	{
 		double CalculateRhsNorm(IVectorView rhs);

@@ -1,22 +1,22 @@
-﻿using System.Collections.Generic;
-
-using MGroup.Analyzers.Dynamic;
-using MGroup.FEM.Entities;
-using MGroup.FEM.Interfaces;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.MSolve.Discretization;
-using MGroup.MSolve.Discretization.FreedomDegrees;
-using MGroup.MSolve.Discretization.Loads;
-using MGroup.MSolve.FEM.Interfaces;
-using MGroup.MSolve.Logging;
-using MGroup.Problems;
-using MGroup.Solvers;
-using MGroup.Solvers.Direct;
-using Moq;
-using Xunit;
-
-namespace MGroup.Analyzers.Tests
+﻿namespace MGroup.Analyzers.Tests
 {
+	using System.Collections.Generic;
+
+	using MGroup.Analyzers.Dynamic;
+	using MGroup.FEM.Entities;
+	using MGroup.FEM.Interfaces;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.MSolve.Discretization;
+	using MGroup.MSolve.Discretization.FreedomDegrees;
+	using MGroup.MSolve.Discretization.Loads;
+	using MGroup.MSolve.FEM.Interfaces;
+	using MGroup.MSolve.Logging;
+	using MGroup.Problems;
+	using MGroup.Solvers;
+	using MGroup.Solvers.Direct;
+	using Moq;
+	using Xunit;
+
 	public static class NewmarkDynamicAnalysisTests
 	{
 		[Fact]

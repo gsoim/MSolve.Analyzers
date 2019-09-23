@@ -1,10 +1,4 @@
-﻿using System.Collections.Generic;
-
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.MSolve.Discretization.Interfaces;
-
-//TODO: This should be called second order provider. The matrices, coefficients, etc. should be named 0th-order, 1st-order,
+﻿//TODO: This should be called second order provider. The matrices, coefficients, etc. should be named 0th-order, 1st-order,
 //      2nd-order.
 //TODO: Implicit/explicit time integration logic should be defined by the analyzer and implemented by the provider, in order to
 //      reuse the analyzer for problems that have a slightly different differential equation (e.g. coupled problems).
@@ -13,6 +7,12 @@ using MGroup.MSolve.Discretization.Interfaces;
 //TODO: Rename the Get~ methods to Calculate or something similar.
 namespace MGroup.Analyzers.Interfaces
 {
+	using System.Collections.Generic;
+
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.MSolve.Discretization.Interfaces;
+
 	public interface IImplicitIntegrationProvider : IAnalyzerProvider
 	{
 		//TODO: This should not exist at all. The provider should return the 0th order (stiffness), 1st order (damping) and 2nd

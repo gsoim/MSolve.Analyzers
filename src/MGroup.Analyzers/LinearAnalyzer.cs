@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-
-using MGroup.Analyzers.Interfaces;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.MSolve.Discretization.FreedomDegrees;
-using MGroup.MSolve.Discretization.Interfaces;
-using MGroup.MSolve.Logging.Interfaces;
-using MGroup.Solvers;
-using MGroup.Solvers.LinearSystems;
-
-namespace MGroup.Analyzers
+﻿namespace MGroup.Analyzers
 {
+	using System;
+	using System.Collections.Generic;
+
+	using MGroup.Analyzers.Interfaces;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.MSolve.Discretization.FreedomDegrees;
+	using MGroup.MSolve.Discretization.Interfaces;
+	using MGroup.MSolve.Logging.Interfaces;
+	using MGroup.Solvers;
+	using MGroup.Solvers.LinearSystems;
+
 	public class LinearAnalyzer : IChildAnalyzer
 	{
 		private readonly IReadOnlyDictionary<int, ILinearSystem> linearSystems;

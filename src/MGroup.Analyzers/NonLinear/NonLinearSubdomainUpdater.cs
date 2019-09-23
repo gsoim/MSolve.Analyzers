@@ -1,9 +1,9 @@
-﻿using MGroup.Analyzers.Interfaces;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.MSolve.Discretization.Interfaces;
-
 namespace MGroup.Analyzers.NonLinear
 {
+	using MGroup.Analyzers.Interfaces;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.MSolve.Discretization.Interfaces;
+
 	public class NonLinearSubdomainUpdater : INonLinearSubdomainUpdater
 	{
 		private readonly ISubdomain subdomain;

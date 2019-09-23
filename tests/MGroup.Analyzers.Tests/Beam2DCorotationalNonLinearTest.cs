@@ -1,21 +1,21 @@
-﻿using System.Collections.Generic;
-
-using MGroup.Analyzers.NonLinear;
-using MGroup.FEM.Elements;
-using MGroup.FEM.Elements.SupportiveClasses;
-using MGroup.FEM.Entities;
-using MGroup.Materials;
-using MGroup.MSolve.Discretization;
-using MGroup.MSolve.Discretization.FreedomDegrees;
-using MGroup.MSolve.Discretization.Loads;
-using MGroup.MSolve.Logging;
-using MGroup.Problems;
-using MGroup.Solvers;
-using MGroup.Solvers.Direct;
-using Xunit;
-
-namespace MGroup.Analyzers.Tests
+﻿namespace MGroup.Analyzers.Tests
 {
+	using System.Collections.Generic;
+
+	using MGroup.Analyzers.NonLinear;
+	using MGroup.FEM.Elements;
+	using MGroup.FEM.Elements.SupportiveClasses;
+	using MGroup.FEM.Entities;
+	using MGroup.Materials;
+	using MGroup.MSolve.Discretization;
+	using MGroup.MSolve.Discretization.FreedomDegrees;
+	using MGroup.MSolve.Discretization.Loads;
+	using MGroup.MSolve.Logging;
+	using MGroup.Problems;
+	using MGroup.Solvers;
+	using MGroup.Solvers.Direct;
+	using Xunit;
+
 	public class Beam2DCorotationalNonLinearTest
 	{
 		private const int subdomainID = 0;
