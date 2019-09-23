@@ -1,5 +1,3 @@
-﻿//TODO: Optimization: I could avoid initialization and GC of some vectors by reusing existing ones.
-//TODO: Use a base class for implicit time integration methods (perhaps to together with explicit)
 namespace MGroup.Analyzers.Dynamic
 {
 	using System;
@@ -18,7 +16,7 @@ namespace MGroup.Analyzers.Dynamic
 	///
 	/// Authors: Yannis Kalogeris
 	/// </summary>
-	public class ThermalDynamicAnalyzer : INonLinearParentAnalyzer //TODO: why is this non linear
+	public class ThermalDynamicAnalyzer : INonLinearParentAnalyzer
 	{
 		private readonly double beta, timeStep, totalTime;
 		private readonly IModel model;
@@ -37,7 +35,6 @@ namespace MGroup.Analyzers.Dynamic
 			this.model = model;
 			this.linearSystems = solver.LinearSystems;
 			this.solver = solver;
-			//solver.PreventFromOverwrittingSystemMatrices(); //TODO: If the scheme is purely implicit we can overwrite the matrix.
 			this.provider = provider;
 			this.ChildAnalyzer = childAnalyzer;
 			this.beta = beta;
@@ -46,7 +43,7 @@ namespace MGroup.Analyzers.Dynamic
 			this.ChildAnalyzer.ParentAnalyzer = this;
 		}
 
-		public Dictionary<int, IAnalyzerLog[]> Logs => null; //TODO: this can't be right
+		public Dictionary<int, IAnalyzerLog[]> Logs => null;
 
 		public Dictionary<int, ImplicitIntegrationAnalyzerLog> ResultStorages { get; }
 			= new Dictionary<int, ImplicitIntegrationAnalyzerLog>();
@@ -58,7 +55,7 @@ namespace MGroup.Analyzers.Dynamic
 			var coeffs = new ImplicitIntegrationCoefficients
 			{
 				Mass = 1 / timeStep,
-				Stiffness = beta
+				Stiffness = beta,
 			};
 			foreach (ILinearSystem linearSystem in linearSystems.Values)
 			{
@@ -68,57 +65,6 @@ namespace MGroup.Analyzers.Dynamic
 
 		public IVector GetOtherRhsComponents(ILinearSystem linearSystem, IVector currentSolution)
 		{
-			#region old code
-			//// u[id]: old solution
-			//// v[id]: current solution
-			//// vv: old acceleration
-			//// v2: current acceleration
-			//// v1: current velocity
-			////double vv = v2[id].Data[j];
-			////v2[id].Data[j] = a0 * (v[id].Data[j] - u[id].Data[j]) - a2 * v1[id].Data[j] - a3 * vv;
-			////v1[id].Data[j] += a6 * vv + a7 * v2[id].Data[j];
-
-			//int id = subdomain.ID;
-			//Vector<double> currentAcceleration = new Vector<double>(subdomain.Solution.Length);
-			//Vector<double> currentVelocity = new Vector<double>(subdomain.Solution.Length);
-			//Vector<double> uu = new Vector<double>(subdomain.Solution.Length);
-			//Vector<double> uc = new Vector<double>(subdomain.Solution.Length);
-			//for (int j = 0; j < subdomain.Rhs.Length; j++)
-			//{
-			//    currentAcceleration.Data[j] = a0 * (currentSolution[j] - v[id].Data[j]) - a2 * v1[id].Data[j] - a3 * v2[id].Data[j];
-			//    currentVelocity.Data[j] = v1[id].Data[j] + a6 * v2[id].Data[j] + a7 * currentAcceleration.Data[j];
-			//    uu.Data[j] = a0 * currentSolution[j] + a2 * currentVelocity.Data[j] + a3 * currentAcceleration.Data[j];
-			//    uc.Data[j] = a1 * currentSolution[j] + a4 * currentVelocity.Data[j] + a5 * currentAcceleration.Data[j];
-			//}
-
-			//Vector<double> tempResult = new Vector<double>(subdomain.Solution.Length);
-			//Vector<double> result = new Vector<double>(subdomain.Solution.Length);
-			//provider.MassMatrixVectorProduct(subdomain, uu, tempResult.Data);
-			//result.Add(tempResult);
-
-			//provider.DampingMatrixVectorProduct(subdomain, uc, tempResult.Data);
-			//result.Add(tempResult);
-
-			//return result.Data;
-
-			//Vector<double> uu = new Vector<double>(subdomain.Solution.Length);
-			//Vector<double> uc = new Vector<double>(subdomain.Solution.Length);
-			//int id = subdomain.ID;
-			//for (int j = 0; j < subdomain.Rhs.Length; j++)
-			//{
-			//    uu.Data[j] = -a0 * (v[id].Data[j] - currentSolution[j]) - a2 * v1[id].Data[j] - a3 * v2[id].Data[j];
-			//    uc.Data[j] = -a1 * (v[id].Data[j] - currentSolution[j]) - a4 * v1[id].Data[j] - a5 * v2[id].Data[j];
-			//}
-			//provider.MassMatrixVectorProduct(subdomain, uu, tempResult.Data);
-			//result.Add(tempResult);
-			//provider.DampingMatrixVectorProduct(subdomain, uc, tempResult.Data);
-			//result.Add(tempResult);
-
-			////CalculateRhsImplicit(subdomain, result.Data, false);
-			////result.Scale(-1d);
-			#endregion
-
-			// result = M * u
 			return provider.MassMatrixVectorProduct(linearSystem.Subdomain, currentSolution);
 		}
 
@@ -126,12 +72,11 @@ namespace MGroup.Analyzers.Dynamic
 		{
 			if (isFirstAnalysis)
 			{
-				// The order in which the next initializations happen is very important.
 				model.ConnectDataStructures();
 				solver.OrderDofs(false);
 				foreach (ILinearSystem linearSystem in linearSystems.Values)
 				{
-					linearSystem.Reset(); // Necessary to define the linear system's size
+					linearSystem.Reset();
 					linearSystem.Subdomain.Forces = Vector.CreateZero(linearSystem.Size);
 				}
 			}
@@ -139,26 +84,20 @@ namespace MGroup.Analyzers.Dynamic
 			{
 				foreach (ILinearSystem linearSystem in linearSystems.Values)
 				{
-					//TODO: Perhaps these shouldn't be done if an analysis has already been executed. The model will not be
-					//      modified. Why should the linear system be?
 					linearSystem.Reset();
 				}
 			}
 
-			//TODO: Perhaps this should be called by the child analyzer
 			BuildMatrices();
 
-			// Loads must be created after building the matrices.
-			//TODO: Some loads may not have to be recalculated each time the stiffness changes.
 			model.AssignLoads(solver.DistributeNodalLoads);
 			foreach (ILinearSystem linearSystem in linearSystems.Values)
 			{
 				linearSystem.RhsVector = linearSystem.Subdomain.Forces;
 			}
 
-			//InitializeCoefficients();
 			InitializeInternalVectors();
-			//InitializeMatrices();
+
 			InitializeRhs();
 
 			if (ChildAnalyzer == null)
@@ -204,9 +143,6 @@ namespace MGroup.Analyzers.Dynamic
 
 		private IVector CalculateRhsImplicit(ILinearSystem linearSystem, bool addRhs)
 		{
-			//TODO: what is the meaning of addRhs? Do we need this when solving dynamic thermal equations?
-
-			// result = (1-b)* rhsPrevious + beta * rhs + 1/dt * Capacity * temperature - (1-b) * Conductivity * temperature
 			int id = linearSystem.Subdomain.ID;
 			capacityTimesTemperature[id] = provider.MassMatrixVectorProduct(linearSystem.Subdomain, temperature[id]);
 			conductivityTimesTemperature[id] = provider.DampingMatrixVectorProduct(linearSystem.Subdomain, temperature[id]);
@@ -232,12 +168,9 @@ namespace MGroup.Analyzers.Dynamic
 				int id = linearSystem.Subdomain.ID;
 				capacityTimesTemperature.Add(id, linearSystem.CreateZeroVector());
 				conductivityTimesTemperature.Add(id, linearSystem.CreateZeroVector());
-				//temperature.Add(id, linearSystem.CreateZeroVector());
 				rhs.Add(id, linearSystem.CreateZeroVector());
 				rhsPrevious.Add(id, linearSystem.CreateZeroVector());
 
-				// Account for initial conditions coming from a previous solution.
-				//TODO: This doesn't work as intended. The solver (previously the LinearSystem) initializes the solution to zero.
 				if (linearSystem.Solution != null)
 				{
 					temperature.Add(id, linearSystem.Solution.Copy());
@@ -253,13 +186,13 @@ namespace MGroup.Analyzers.Dynamic
 		{
 			ImplicitIntegrationCoefficients coeffs = new ImplicitIntegrationCoefficients
 			{
-				Mass = 0,  //never used
-				Stiffness = 0
+				Mass = 0,
+				Stiffness = 0,
 			};
 			foreach (ILinearSystem linearSystem in linearSystems.Values)
 			{
 				provider.ProcessRhs(coeffs, linearSystem.Subdomain, linearSystem.RhsVector);
-				rhs[linearSystem.Subdomain.ID] = linearSystem.RhsVector.Copy(); //TODO: copying the vectors is wasteful.
+				rhs[linearSystem.Subdomain.ID] = linearSystem.RhsVector.Copy();
 			}
 		}
 
@@ -269,11 +202,15 @@ namespace MGroup.Analyzers.Dynamic
 			{
 				int id = linearSystem.Subdomain.ID;
 				if (ResultStorages.ContainsKey(id))
+				{
 					if (ResultStorages[id] != null)
+					{
 						foreach (var l in ChildAnalyzer.Logs[id])
 						{
 							ResultStorages[id].StoreResults(start, end, l);
 						}
+					}
+				}
 			}
 		}
 

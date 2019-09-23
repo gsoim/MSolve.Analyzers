@@ -12,7 +12,7 @@ namespace MGroup.Analyzers.Dynamic
 	using MGroup.Solvers;
 	using MGroup.Solvers.LinearSystems;
 
-	public class NewmarkDynamicAnalyzer : INonLinearParentAnalyzer //TODO: why is this non linear
+	public class NewmarkDynamicAnalyzer : INonLinearParentAnalyzer
 	{
 		/// <summary>
 		/// This class makes the appropriate arrangements for the solution of linear dynamic equations
