@@ -16,7 +16,7 @@ namespace MGroup.Analyzers.NonLinear
 		protected double residualTolerance = 1e-8;
 		protected readonly ISolver solver;
 
-		protected NonLinearAnalyzerBuilderBase(IModel model, ISolver solver, INonLinearProvider provider, 
+		protected NonLinearAnalyzerBuilderBase(IModel model, ISolver solver, INonLinearProvider provider,
 			int numIncrements)
 		{
 			//TODO: this should belong to all (child) analyzer builders

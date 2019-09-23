@@ -6,7 +6,7 @@ namespace MGroup.Analyzers.Interfaces
 	public interface IStaticProvider : IAnalyzerProvider
 	{
 		/// <summary>
-		/// Returns the submatrix that corresponds to the free freedom degrees of a subdomain. If A is the matrix corresponding 
+		/// Returns the submatrix that corresponds to the free freedom degrees of a subdomain. If A is the matrix corresponding
 		/// to all dofs, f denotes free dofs and c denotes constrained dofs then A = [ Aff Acf^T; Acf Acc ]. This method
 		/// builds and returns only Aff.
 		/// </summary>
@@ -14,8 +14,8 @@ namespace MGroup.Analyzers.Interfaces
 		IMatrixView CalculateMatrix(ISubdomain subdomain);
 
 		/// <summary>
-		/// Returns the submatrices that corresponds to the free and constrained freedom degrees of a subdomain. If A is the 
-		/// matrix corresponding to all dofs, f denotes free dofs and c denotes constrained dofs then A = [ Aff Acf^T; Acf Acc ]. 
+		/// Returns the submatrices that corresponds to the free and constrained freedom degrees of a subdomain. If A is the
+		/// matrix corresponding to all dofs, f denotes free dofs and c denotes constrained dofs then A = [ Aff Acf^T; Acf Acc ].
 		/// This method builds and returns (Aff, Afc, Acf, Acc). If the linear system is symmetric, then Afc = Acf^T.
 		/// In this case, these entries are only stored once and shared between the returned Afc, Acf.
 		/// </summary>

@@ -14,7 +14,7 @@ using MGroup.Solvers.LinearSystems;
 namespace MGroup.Analyzers.Dynamic
 {
 	/// <summary>
-	/// 
+	///
 	/// Authors: Yannis Kalogeris
 	/// </summary>
 	public class ThermalDynamicAnalyzer : INonLinearParentAnalyzer //TODO: why is this non linear
@@ -129,7 +129,7 @@ namespace MGroup.Analyzers.Dynamic
 				solver.OrderDofs(false);
 				foreach (ILinearSystem linearSystem in linearSystems.Values)
 				{
-					linearSystem.Reset(); // Necessary to define the linear system's size 
+					linearSystem.Reset(); // Necessary to define the linear system's size
 					linearSystem.Subdomain.Forces = Vector.CreateZero(linearSystem.Size);
 				}
 			}
@@ -137,7 +137,7 @@ namespace MGroup.Analyzers.Dynamic
 			{
 				foreach (ILinearSystem linearSystem in linearSystems.Values)
 				{
-					//TODO: Perhaps these shouldn't be done if an analysis has already been executed. The model will not be 
+					//TODO: Perhaps these shouldn't be done if an analysis has already been executed. The model will not be
 					//      modified. Why should the linear system be?
 					linearSystem.Reset();
 				}
@@ -204,7 +204,7 @@ namespace MGroup.Analyzers.Dynamic
 			IVector rhsResult = rhsPrevious[id].LinearCombination(1 - beta, rhs[id], beta);
 			rhsResult.AxpyIntoThis(capacityTimesTemperature[id], 1 / timeStep);
 			rhsResult.AxpyIntoThis(conductivityTimesTemperature[id], -(1 - beta));
-			
+
 			rhsPrevious[id] = rhs[id];
 			return rhsResult;
 		}
@@ -226,7 +226,7 @@ namespace MGroup.Analyzers.Dynamic
 				rhs.Add(id, linearSystem.CreateZeroVector());
 				rhsPrevious.Add(id, linearSystem.CreateZeroVector());
 
-				// Account for initial conditions coming from a previous solution. 
+				// Account for initial conditions coming from a previous solution.
 				//TODO: This doesn't work as intended. The solver (previously the LinearSystem) initializes the solution to zero.
 				if (linearSystem.Solution != null) temperature.Add(id, linearSystem.Solution.Copy());
 				else temperature.Add(id, linearSystem.CreateZeroVector());

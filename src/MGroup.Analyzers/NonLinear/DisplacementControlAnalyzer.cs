@@ -26,8 +26,8 @@ namespace MGroup.Analyzers.NonLinear
 		/// <param name="residualTolerance">Tolerance for the convergence criterion of the residual forces</param>
 		private DisplacementControlAnalyzer(IModel model, ISolver solver, INonLinearProvider provider,
 			IReadOnlyDictionary<int, INonLinearSubdomainUpdater> subdomainUpdaters,
-			int numIncrements, int maxIterationsPerIncrement, int numIterationsForMatrixRebuild, double residualTolerance) :
-			base(model, solver, provider, subdomainUpdaters, numIncrements, maxIterationsPerIncrement,
+			int numIncrements, int maxIterationsPerIncrement, int numIterationsForMatrixRebuild, double residualTolerance)
+			: base(model, solver, provider, subdomainUpdaters, numIncrements, maxIterationsPerIncrement,
 				numIterationsForMatrixRebuild, residualTolerance)
 		{ }
 
@@ -142,8 +142,8 @@ namespace MGroup.Analyzers.NonLinear
 
 		public class Builder : NonLinearAnalyzerBuilderBase
 		{
-			public Builder(IModel model, ISolver solver, INonLinearProvider provider, int numIncrements) :
-				base(model, solver, provider, numIncrements)
+			public Builder(IModel model, ISolver solver, INonLinearProvider provider, int numIncrements)
+				: base(model, solver, provider, numIncrements)
 			{
 				MaxIterationsPerIncrement = 1000;
 				NumIterationsForMatrixRebuild = 1;

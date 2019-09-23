@@ -16,7 +16,7 @@ namespace MGroup.Analyzers
 		private readonly IStaticProvider provider;
 		private readonly ISolver solver;
 
-		public StaticAnalyzer(IModel model, ISolver solver, IStaticProvider provider, 
+		public StaticAnalyzer(IModel model, ISolver solver, IStaticProvider provider,
 			IChildAnalyzer childAnalyzer)
 		{
 			this.model = model;
@@ -41,7 +41,7 @@ namespace MGroup.Analyzers
 
 		public IVector GetOtherRhsComponents(ILinearSystem linearSystem, IVector currentSolution)
 		{
-			//TODO: use a ZeroVector class that avoid doing useless operations or refactor this method. E.g. let this method 
+			//TODO: use a ZeroVector class that avoid doing useless operations or refactor this method. E.g. let this method
 			// alter the child analyzer's rhs vector, instead of the opposite (which is currently done).
 			return linearSystem.CreateZeroVector();
 		}
@@ -55,7 +55,7 @@ namespace MGroup.Analyzers
 				solver.OrderDofs(false);
 				foreach (ILinearSystem linearSystem in linearSystems.Values)
 				{
-					linearSystem.Reset(); // Necessary to define the linear system's size 
+					linearSystem.Reset(); // Necessary to define the linear system's size
 					linearSystem.Subdomain.Forces = Vector.CreateZero(linearSystem.Size);
 				}
 			}
@@ -63,19 +63,19 @@ namespace MGroup.Analyzers
 			{
 				foreach (ILinearSystem linearSystem in linearSystems.Values)
 				{
-					//TODO: Perhaps these shouldn't be done if an analysis has already been executed. The model will not be 
+					//TODO: Perhaps these shouldn't be done if an analysis has already been executed. The model will not be
 					//      modified. Why should the linear system be?
-					linearSystem.Reset(); 
+					linearSystem.Reset();
 					linearSystem.Subdomain.Forces = Vector.CreateZero(linearSystem.Size);
 				}
 			}
 
 			//TODO: Perhaps this should be called by the child analyzer
-			BuildMatrices(); 
+			BuildMatrices();
 
 			// Loads must be created after building the matrices.
 			//TODO: Some loads may not have to be recalculated each time the stiffness changes.
-			model.AssignLoads(solver.DistributeNodalLoads); 
+			model.AssignLoads(solver.DistributeNodalLoads);
 			foreach (ILinearSystem linearSystem in linearSystems.Values)
 			{
 				linearSystem.RhsVector = linearSystem.Subdomain.Forces;

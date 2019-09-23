@@ -22,7 +22,7 @@ namespace MGroup.Analyzers.NonLinear
 
 		public IVector GetRHSFromSolutionWithInitialDisplacemntsEffect(IVectorView solution, IVectorView dSolution, Dictionary<int, INode> boundaryNodes,
 			Dictionary<int, Dictionary<IDofType, double>> initialConvergedBoundaryDisplacements, Dictionary<int, Dictionary<IDofType, double>> totalBoundaryDisplacements,
-			int nIncrement, int totalIncrements) //TODO leave 
+			int nIncrement, int totalIncrements) //TODO leave
 		{
 			return this.subdomain.GetRHSFromSolutionWithInitialDisplacementsEffect(solution, dSolution, boundaryNodes,
 				initialConvergedBoundaryDisplacements, totalBoundaryDisplacements,
@@ -44,7 +44,7 @@ namespace MGroup.Analyzers.NonLinear
 			throw new NotSupportedException();
 		}
 
-		public IVector GetRhsFromSolution(IVectorView solution, IVectorView dSolution) //TODO leave 
+		public IVector GetRhsFromSolution(IVectorView solution, IVectorView dSolution) //TODO leave
 		{
 			throw new NotSupportedException();
 			return this.subdomain.GetRhsFromSolution(solution, dSolution);

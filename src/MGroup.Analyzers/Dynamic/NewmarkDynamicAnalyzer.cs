@@ -89,7 +89,7 @@ namespace MGroup.Analyzers.Dynamic
 			this.ChildAnalyzer.ParentAnalyzer = this;
 
 			/// <summary>
-			/// Initialize coefficients. It would make sense for them to be initialized in a different function, if they could 
+			/// Initialize coefficients. It would make sense for them to be initialized in a different function, if they could
 			/// change during the analysis
 			/// </summary>
 			a0 = 1 / (alpha * timeStep * timeStep);
@@ -110,7 +110,7 @@ namespace MGroup.Analyzers.Dynamic
 		public IChildAnalyzer ChildAnalyzer { get; }
 
 		/// <summary>
-		/// Makes the proper solver-specific initializations before the solution of the linear system of equations. This method MUST be called before the actual solution of the aforementioned system 
+		/// Makes the proper solver-specific initializations before the solution of the linear system of equations. This method MUST be called before the actual solution of the aforementioned system
 		/// </summary>
 		public void BuildMatrices()
 		{
@@ -236,7 +236,7 @@ namespace MGroup.Analyzers.Dynamic
 			return rhsResult;
 		}
 
-		
+
 		private void InitializeInternalVectors()
 		{
 			uu.Clear();
@@ -283,7 +283,7 @@ namespace MGroup.Analyzers.Dynamic
 			foreach (ILinearSystem linearSystem in linearSystems.Values)
 			{
 				provider.ProcessRhs(coeffs, linearSystem.Subdomain, linearSystem.RhsVector);
-				rhs[linearSystem.Subdomain.ID] = linearSystem.RhsVector.Copy(); 
+				rhs[linearSystem.Subdomain.ID] = linearSystem.RhsVector.Copy();
 			}
 		}
 
@@ -313,7 +313,7 @@ namespace MGroup.Analyzers.Dynamic
 			foreach (ILinearSystem linearSystem in linearSystems.Values)
 			{
 				int id = linearSystem.Subdomain.ID;
-				u[id].CopyFrom(v[id]); 
+				u[id].CopyFrom(v[id]);
 				v[id].CopyFrom(linearSystem.Solution);
 
 				IVector vv = v2[id].Add(externalAccelerations[id]);
@@ -352,18 +352,18 @@ namespace MGroup.Analyzers.Dynamic
 			}
 
 			/// <summary>
-			/// 
+			///
 			/// </summary>
 			/// <param name="beta">
-			/// Used in the intepolation between the accelerations of the previous and current time step, in order to obtain the 
+			/// Used in the intepolation between the accelerations of the previous and current time step, in order to obtain the
 			/// current displacements. Also called alpha by Bathe.
 			/// </param>
 			/// <param name="gamma">
-			/// Used in the intepolation between the accelerations of the previous and current time step, in order to obtain the 
+			/// Used in the intepolation between the accelerations of the previous and current time step, in order to obtain the
 			/// current velocities. Also called delta by Bathe.
 			/// </param>
 			/// <param name="allowConditionallyStable">
-			/// If set to true, the user must make sure that the time step chosen is lower than the critical step size 
+			/// If set to true, the user must make sure that the time step chosen is lower than the critical step size
 			/// corresponding to these particular <paramref name="beta"/>, <paramref name="gamma"/> parameters.
 			/// </param>
 			public void SetNewmarkParameters(double beta, double gamma, bool allowConditionallyStable = false)
@@ -398,9 +398,9 @@ namespace MGroup.Analyzers.Dynamic
 			}
 
 			/// <summary>
-			/// Central diffences: gamma = 1/2, beta = 0. Newmark results in central diffences, a conditionally stable explicit 
-			/// method. To ensure stability, the time step must be &lt;= the critical step size = 2 / w,  where w is the maximum 
-			/// natural radian frequency. It would be more efficient to use an explicit dynamic analyzer. 
+			/// Central diffences: gamma = 1/2, beta = 0. Newmark results in central diffences, a conditionally stable explicit
+			/// method. To ensure stability, the time step must be &lt;= the critical step size = 2 / w,  where w is the maximum
+			/// natural radian frequency. It would be more efficient to use an explicit dynamic analyzer.
 			/// </summary>
 			public void SetNewmarkParametersForCentralDifferences()
 			{
@@ -409,7 +409,7 @@ namespace MGroup.Analyzers.Dynamic
 			}
 
 			/// <summary>
-			/// Constant acceleration (also called average acceleration or trapezoid rule): gamma = 1/2, beta = 1/4. 
+			/// Constant acceleration (also called average acceleration or trapezoid rule): gamma = 1/2, beta = 1/4.
 			/// This is the most common scheme and is unconditionally stable. In this analyzer, it is used as the default.
 			/// </summary>
 			public void SetNewmarkParametersForConstantAcceleration()
@@ -419,8 +419,8 @@ namespace MGroup.Analyzers.Dynamic
 			}
 
 			/// <summary>
-			/// Linear acceleration: gamma = 1/2, beta = 1/6. This is more accurate than the default constant acceleration, 
-			/// but it conditionally stable. To ensure stability, the time step must be &lt;= the critical step size = 3.464 / w 
+			/// Linear acceleration: gamma = 1/2, beta = 1/6. This is more accurate than the default constant acceleration,
+			/// but it conditionally stable. To ensure stability, the time step must be &lt;= the critical step size = 3.464 / w
 			/// = 0.551 * T, where w is the maximum natural radian frequency and T is the minimum natural period.
 			/// </summary>
 			public void SetNewmarkParametersForLinearAcceleration()

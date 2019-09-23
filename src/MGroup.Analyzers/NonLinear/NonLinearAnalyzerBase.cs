@@ -8,14 +8,14 @@ using MGroup.MSolve.Logging.Interfaces;
 using MGroup.Solvers;
 using MGroup.Solvers.LinearSystems;
 
-//TODO: It would be clearer and less error prone if incrementing the loading conditions doesn't alter the model's/subdomain's 
+//TODO: It would be clearer and less error prone if incrementing the loading conditions doesn't alter the model's/subdomain's
 //      loads and constraints.
 namespace MGroup.Analyzers.NonLinear
 {
 	public abstract class NonLinearAnalyzerBase : IChildAnalyzer
 	{
 		//TODO: this should be passed in the constructor by the implementing class and used in Solve().
-		//protected readonly double residualTolerance; 
+		//protected readonly double residualTolerance;
 
 		protected readonly IReadOnlyDictionary<int, ILinearSystem> linearSystems;
 		protected readonly int maxIterationsPerIncrement;
@@ -30,7 +30,7 @@ namespace MGroup.Analyzers.NonLinear
 		protected readonly Dictionary<int, IVector> u = new Dictionary<int, IVector>();
 		protected readonly Dictionary<int, IVector> du = new Dictionary<int, IVector>();
 		protected readonly Dictionary<int, IVector> uPlusdu = new Dictionary<int, IVector>();
-		protected Vector globalRhs; //TODO: This was originally readonly 
+		protected Vector globalRhs; //TODO: This was originally readonly
 		protected double globalRhsNormInitial; //TODO: This can probably be a local variable.
 		protected INonLinearParentAnalyzer parentAnalyzer = null;
 
@@ -119,7 +119,7 @@ namespace MGroup.Analyzers.NonLinear
 				internalRhsVectors.Add(id, internalRhs);
 			}
 
-			return internalRhsVectors; 
+			return internalRhsVectors;
 		}
 
 		protected double UpdateResidualForcesAndNorm(int currentIncrement, Dictionary<int, IVector> internalRhs)
@@ -133,7 +133,7 @@ namespace MGroup.Analyzers.NonLinear
 
 				// External forces = loadFactor * total external forces
 				//TODO: the next line adds a vector to itself many times. This is called multiplication and is much faster.
-				for (int j = 0; j <= currentIncrement; j++) linearSystem.RhsVector.AddIntoThis(rhs[id]);//TODOMaria this adds the external forces 
+				for (int j = 0; j <= currentIncrement; j++) linearSystem.RhsVector.AddIntoThis(rhs[id]);//TODOMaria this adds the external forces
 
 				// Residual forces = external - internal
 				linearSystem.RhsVector.SubtractIntoThis(internalRhs[id]);
@@ -231,12 +231,12 @@ namespace MGroup.Analyzers.NonLinear
 			}
 		}
 
-		//TODO: this should be implemented as a (virtual?) template method. That requires restructuring the helper methods, such 
+		//TODO: this should be implemented as a (virtual?) template method. That requires restructuring the helper methods, such
 		//      that only the parts of the algorithm that are different for LoadControl, DisplacementControl, etc, are delegated
 		//      to the concrete implementation. E.g. instead of the load incrementing be done by many different helper methods
 		//      (e.g. ScaleSubdomainConstraints()), which are called in various parts of the algorithm, we could have an abstract
-		//      IncrementLoading() method, where LoadControl would increment the nodal loads, DisplacementControl the 
-		//      prescribed displacements, etc. 
+		//      IncrementLoading() method, where LoadControl would increment the nodal loads, DisplacementControl the
+		//      prescribed displacements, etc.
 		public abstract void Solve();
 	}
 }

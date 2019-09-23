@@ -72,7 +72,7 @@ namespace MGroup.Analyzers
 				}
 				catch (KeyNotFoundException)
 				{
-					// There aren't any non zero prescribed displacements, therefore we do not have to calculate the equivalent 
+					// There aren't any non zero prescribed displacements, therefore we do not have to calculate the equivalent
 					// nodal loads, which is an expensive operation (all elements are accessed, their stiffness is built, etc..)
 				}
 			}
