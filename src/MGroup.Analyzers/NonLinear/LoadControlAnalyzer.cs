@@ -1,29 +1,31 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using MGroup.Analyzers.Interfaces;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.MSolve.Discretization.Interfaces;
-using MGroup.MSolve.Logging;
-using MGroup.Solvers;
-
 namespace MGroup.Analyzers.NonLinear
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Diagnostics;
+
+	using MGroup.Analyzers.Interfaces;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.MSolve.Discretization.Interfaces;
+	using MGroup.MSolve.Logging;
+	using MGroup.Solvers;
+
 	public class LoadControlAnalyzer : NonLinearAnalyzerBase
 	{
 		private LoadControlAnalyzer(IModel model, ISolver solver, INonLinearProvider provider,
 			IReadOnlyDictionary<int, INonLinearSubdomainUpdater> subdomainUpdaters,
-			int numIncrements, int maxIterationsPerIncrement, int numIterationsForMatrixRebuild, double residualTolerance) : 
+			int numIncrements, int maxIterationsPerIncrement, int numIterationsForMatrixRebuild, double residualTolerance) :
 			base(model, solver, provider, subdomainUpdaters, numIncrements, maxIterationsPerIncrement, 
 				numIterationsForMatrixRebuild, residualTolerance)
-		{ }
-		
+		{
+		}
+
 		public override void Solve()
 		{
 			InitializeLogs();
 
 			DateTime start = DateTime.Now;
-			UpdateInternalVectors();//TODOMaria this divides the externally applied load by the number of increments and scatters it to all subdomains and stores it in the class subdomain dictionary and total external load vector
+			UpdateInternalVectors(); //TODOMaria this divides the externally applied load by the number of increments and scatters it to all subdomains and stores it in the class subdomain dictionary and total external load vector
 			for (int increment = 0; increment < numIncrements; increment++)
 			{
 				double errorNorm = 0;
