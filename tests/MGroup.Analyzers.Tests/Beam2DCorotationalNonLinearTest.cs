@@ -1,4 +1,4 @@
-﻿namespace MGroup.Analyzers.Tests
+namespace MGroup.Analyzers.Tests
 {
 	using System.Collections.Generic;
 
@@ -234,7 +234,7 @@
 
 			// Check output
 			DOFSLog log = (DOFSLog)childAnalyzer.Logs[subdomainID][0]; //There is a list of logs for each subdomain and we want the first one
-			Assert.Equal(-72.090605787610343, log.DOFValues[3], 8);
+			Assert.Equal(-72.090605787610343, log.DOFValues[3], 7);
 		}
 	}
 }
