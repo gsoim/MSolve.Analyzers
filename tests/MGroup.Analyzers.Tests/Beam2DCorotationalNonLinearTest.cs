@@ -44,7 +44,6 @@ namespace MGroup.Analyzers.Tests
 			Node node1 = new Node(id: 1, x: 0.0, y: 0.0);
 			Node node2 = new Node(id: 2, x: 100.0, y: 0.0);
 			Node node3 = new Node(id: 3, x: 200.0, y: 0.0);
-
 			nodes.Add(node1);
 			nodes.Add(node2);
 			nodes.Add(node3);
@@ -102,8 +101,6 @@ namespace MGroup.Analyzers.Tests
 
 			// Choose linear equation system solver
 			var solverBuilder = new SkylineSolver.Builder();
-			// If we reorder, the expected displacements might correspond to different dofs
-			//solverBuilder.DofOrderer = new DofOrderer(new SimpleDofOrderingStrategy(), AmdReordering.CreateWithSuiteSparseAmd());
 			ISolver solver = solverBuilder.BuildSolver(model);
 
 			// Choose the provider of the problem -> here a structural problem
@@ -125,7 +122,7 @@ namespace MGroup.Analyzers.Tests
 			parentAnalyzer.Solve();
 
 			// Check output
-			DOFSLog log = (DOFSLog)childAnalyzer.Logs[subdomainID][0]; //There is a list of logs for each subdomain and we want the first one
+			DOFSLog log = (DOFSLog)childAnalyzer.Logs[subdomainID][0];
 			Assert.Equal(146.5587362562, log.DOFValues[4], 3);
 		}
 
@@ -153,7 +150,6 @@ namespace MGroup.Analyzers.Tests
 			Node node1 = new Node(id: 1, x: 0.0, y: 0.0);
 			Node node2 = new Node(id: 2, x: 100.0, y: 0.0);
 			Node node3 = new Node(id: 3, x: 200.0, y: 0.0);
-
 			nodes.Add(node1);
 			nodes.Add(node2);
 			nodes.Add(node3);
@@ -209,14 +205,14 @@ namespace MGroup.Analyzers.Tests
 				iNode++;
 			}
 
-			// Choose linear equation system solver
+			// Choose Skyline solver
 			var solverBuilder = new SkylineSolver.Builder();
 			ISolver solver = solverBuilder.BuildSolver(model);
 
-			// Choose the provider of the problem -> here a structural problem
+			// Choose the provider of the problem -> structural problem
 			var provider = new ProblemStructural(model, solver);
 
-			// Choose child analyzer -> Child: NewtonRaphsonNonLinearAnalyzer
+			// Choose child analyzer -> Child: DisplacementControlAnalyzer
 			var subdomainUpdaters = new[] { new NonLinearSubdomainUpdater(model.SubdomainsDictionary[subdomainID]) };
 			int numIncrements = 10;
 			var childAnalyzerBuilder = new DisplacementControlAnalyzer.Builder(model, solver, provider, numIncrements);
@@ -233,7 +229,7 @@ namespace MGroup.Analyzers.Tests
 			parentAnalyzer.Solve();
 
 			// Check output
-			DOFSLog log = (DOFSLog)childAnalyzer.Logs[subdomainID][0]; //There is a list of logs for each subdomain and we want the first one
+			DOFSLog log = (DOFSLog)childAnalyzer.Logs[subdomainID][0];
 			Assert.Equal(-72.090605787610343, log.DOFValues[3], 7);
 		}
 	}
