@@ -29,15 +29,12 @@ namespace MGroup.Analyzers.Tests
 		private static bool CompareResults(IVectorView solution)
 		{
 			var comparer = new ValueComparer(1E-5);
-
-			//                                                   dofs:   1,   2,   4,   5,   7,   8
 			var expectedSolution = Vector.CreateFromArray(new double[] { 150, 200, 150, 200, 150, 200 });
 			int numFreeDofs = 6;
 			if (solution.Length != 6)
 			{
 				return false;
 			}
-
 			for (int i = 0; i < numFreeDofs; ++i)
 			{
 				if (!comparer.AreEqual(expectedSolution[i], solution[i]))
@@ -109,8 +106,6 @@ namespace MGroup.Analyzers.Tests
 			model.Loads.Add(new Load() { Amount = q / 2.0, Node = model.NodesDictionary[2], DOF = ThermalDof.Temperature });
 			model.Loads.Add(new Load() { Amount = q, Node = model.NodesDictionary[5], DOF = ThermalDof.Temperature });
 			model.Loads.Add(new Load() { Amount = q / 2.0, Node = model.NodesDictionary[8], DOF = ThermalDof.Temperature });
-
-			////////model.TimeDependentNodalLoads.Add(new SteadyNodalLoad(q / 2.0) { Node = model.NodesDictionary[2], DOF = DOFType.Temperature });
 
 			return model;
 		}

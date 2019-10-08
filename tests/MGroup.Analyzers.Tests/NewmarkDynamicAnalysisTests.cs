@@ -25,7 +25,6 @@ namespace MGroup.Analyzers.Tests
 			var model = new Model();
 			int subdomainID = 0;
 			model.SubdomainsDictionary.Add(subdomainID, new Subdomain(subdomainID));
-
 			var n = new Node(id: 0, x: double.NaN);
 			var e = new Element() { ID = 0 };
 			e.NodesDictionary.Add(0, n);
@@ -33,9 +32,6 @@ namespace MGroup.Analyzers.Tests
 			m.Setup(x => x.StiffnessMatrix(e)).Returns(Matrix.CreateFromArray(new double[,] { { 6, -2, }, { -2, 4 } }));
 			m.Setup(x => x.MassMatrix(e)).Returns(Matrix.CreateFromArray(new double[,] { { 2, 0, }, { 0, 1 } }));
 			m.Setup(x => x.DampingMatrix(e)).Returns(Matrix.CreateFromArray(new double[,] { { 0, 0, }, { 0, 0 } }));
-			//m.Setup(x => x.StiffnessMatrix(e)).Returns(new Numerical.LinearAlgebra.SymmetricMatrix2D(new double[] { 6, -2, 4 }));
-			//m.Setup(x => x.MassMatrix(e)).Returns(new Numerical.LinearAlgebra.SymmetricMatrix2D(new double[] { 2, 0, 1 }));
-			//m.Setup(x => x.DampingMatrix(e)).Returns(new Numerical.LinearAlgebra.SymmetricMatrix2D(new double[] { 0, 0, 0 }));
 			m.Setup(x => x.GetElementDofTypes(e)).Returns(new[] { new[] { StructuralDof.TranslationX, StructuralDof.TranslationY } });
 			m.SetupGet(x => x.DofEnumerator).Returns(new GenericDofEnumerator());
 			e.ElementType = m.Object;
@@ -57,7 +53,6 @@ namespace MGroup.Analyzers.Tests
 				{
 					double[] accelerations = { loads[0].Amount, loads[1].Amount };
 					var massMatrix = Matrix.CreateFromArray(new double[,] { { 2, 0, }, { 0, 1 } });
-					//var massMatrix = new Numerical.LinearAlgebra.SymmetricMatrix2D(new double[] { 2, 0, 1 });
 					return massMatrix.Multiply(accelerations);
 				}
 			);
@@ -66,19 +61,13 @@ namespace MGroup.Analyzers.Tests
 			var solverBuilder = new SkylineSolver.Builder();
 			ISolver solver = solverBuilder.BuildSolver(model);
 
-			//TODO: These overwrite the corresponding data extracted by the Model. Either set up these or the Model.
-			//solver.LinearSystems[subdomainID].SetMatrix(
-			//    SkylineMatrix.CreateFromArrays(2, new double[] { 6, 4, -2 }, new int[] { 0, 1, 3 }, true)); // K = [6 -2; -2 4]
-			//solver.LinearSystems[subdomainID].RhsVector = Vector.CreateFromArray(new double[] { 0, 10 });
-
 			// Problem type
 			var provider = new ProblemStructural(model, solver);
 
 			// Analyzers
 			var childAnalyzer = new LinearAnalyzer(model, solver, provider);
 			var parentAnalyzerBuilder = new NewmarkDynamicAnalyzer.Builder(model, solver, provider, childAnalyzer, 0.28, 3.36);
-			parentAnalyzerBuilder.SetNewmarkParametersForConstantAcceleration(); // Not necessary. This is the default
-			//parentAnalyzerBuilder.SetNewmarkParameters(0.25, 0.5); // Not necessary. This is the default
+			parentAnalyzerBuilder.SetNewmarkParametersForConstantAcceleration();
 			NewmarkDynamicAnalyzer parentAnalyzer = parentAnalyzerBuilder.Build();
 
 			// Request output
@@ -88,8 +77,8 @@ namespace MGroup.Analyzers.Tests
 			parentAnalyzer.Initialize();
 			parentAnalyzer.Solve();
 
-			//Check output
-			DOFSLog log = (DOFSLog)childAnalyzer.Logs[subdomainID][0]; //There is a list of logs for each subdomain and we want the first one
+			// Check output
+			DOFSLog log = (DOFSLog)childAnalyzer.Logs[subdomainID][0];
 			Assert.Equal(2.2840249264795207, log.DOFValues[0], 8);
 			Assert.Equal(2.4351921891904156, log.DOFValues[1], 8);
 		}
