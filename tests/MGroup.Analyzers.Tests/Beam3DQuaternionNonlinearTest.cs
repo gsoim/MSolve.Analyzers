@@ -1,4 +1,4 @@
-﻿namespace MGroup.Analyzers.Tests
+namespace MGroup.Analyzers.Tests
 {
 	using System.Collections.Generic;
 
@@ -18,8 +18,6 @@
 
 	public class Beam3DQuaternionNonlinearTest
 	{
-		private const string output = @"C:\Users\Serafeim\Desktop\output.txt";
-
 		public void SolveNLBeam()
 		{
 			var m = new Model();
@@ -52,7 +50,6 @@
 			// Analyzers
 			int increments = 10;
 			var childAnalyzerBuilder = new LoadControlAnalyzer.Builder(m, solver, provider, increments);
-			//childAnalyzerBuilder.SubdomainUpdaters = new[] { new NonLinearSubdomainUpdater(model.SubdomainsDictionary[subdomainID]) }; // This is the default
 			LoadControlAnalyzer childAnalyzer = childAnalyzerBuilder.Build();
 			var parentAnalyzer = new StaticAnalyzer(m, solver, provider, childAnalyzer);
 
@@ -137,9 +134,8 @@
 				element.AddNode(model.NodesDictionary[iNode]);
 				element.AddNode(model.NodesDictionary[iNode + 1]);
 
+				// Element Stiffness Matrix
 				var a = beam.StiffnessMatrix(element);
-				//var writer = new FullMatrixWriter();
-				//writer.WriteToFile(a, output);
 
 				// Add beam element to the element and subdomains dictionary of the model
 				model.ElementsDictionary.Add(element.ID, element);
@@ -150,18 +146,17 @@
 			// Add nodal load values at the top nodes of the model
 			model.Loads.Add(new Load() { Amount = nodalLoad, Node = model.NodesDictionary[monitorNode], DOF = StructuralDof.TranslationY });
 
-			// Solver
+			// Skyline Solver
 			var solverBuilder = new SkylineSolver.Builder();
 			ISolver solver = solverBuilder.BuildSolver(model);
 
-			// Problem type
+			// Structural problem type
 			var provider = new ProblemStructural(model, solver);
 
 			// Analyzers
 			int increments = 10;
 			var childAnalyzerBuilder = new LoadControlAnalyzer.Builder(model, solver, provider, increments);
 			childAnalyzerBuilder.ResidualTolerance = 1E-3;
-			//childAnalyzerBuilder.SubdomainUpdaters = new[] { new NonLinearSubdomainUpdater(model.SubdomainsDictionary[subdomainID]) }; // This is the default
 			LoadControlAnalyzer childAnalyzer = childAnalyzerBuilder.Build();
 			var parentAnalyzer = new StaticAnalyzer(model, solver, provider, childAnalyzer);
 
@@ -172,7 +167,7 @@
 			parentAnalyzer.Solve();
 
 			// Check output
-			DOFSLog log = (DOFSLog)childAnalyzer.Logs[1][0]; //There is a list of logs for each subdomain and we want the first one
+			DOFSLog log = (DOFSLog)childAnalyzer.Logs[1][0];
 			Assert.Equal(148.936792350562, log.DOFValues[7], 2);
 		}
 
@@ -272,7 +267,7 @@
 			// Add nodal load values at the top nodes of the model
 			model.Loads.Add(new Load() { Amount = nodalLoad, Node = model.NodesDictionary[monitorNode], DOF = StructuralDof.TranslationX });
 
-			// Solver
+			// Skyline Solver
 			var solverBuilder = new SkylineSolver.Builder();
 			ISolver solver = solverBuilder.BuildSolver(model);
 
@@ -283,18 +278,18 @@
 			int increments = 10;
 			var childAnalyzerBuilder = new LoadControlAnalyzer.Builder(model, solver, provider, increments);
 			childAnalyzerBuilder.ResidualTolerance = 1E-3;
-			//childAnalyzerBuilder.SubdomainUpdaters = new[] { new NonLinearSubdomainUpdater(model.SubdomainsDictionary[subdomainID]) }; // This is the default
 			LoadControlAnalyzer childAnalyzer = childAnalyzerBuilder.Build();
 			var parentAnalyzer = new StaticAnalyzer(model, solver, provider, childAnalyzer);
 
 			// Request output
 			childAnalyzer.LogFactories[1] = new LinearAnalyzerLogFactory(new int[] { 0 });
 
+			// Run the Analysis
 			parentAnalyzer.Initialize();
 			parentAnalyzer.Solve();
 
 			// Check output
-			DOFSLog log = (DOFSLog)childAnalyzer.Logs[1][0]; //There is a list of logs for each subdomain and we want the first one
+			DOFSLog log = (DOFSLog)childAnalyzer.Logs[1][0];
 			Assert.Equal(120.1108698752, log.DOFValues[0], 2);
 		}
 	}
